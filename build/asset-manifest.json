@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/static/css/main.65c90b67.css",
+    "main.js": "/static/js/main.7510d8fd.js",
+    "static/js/453.8d4e7591.chunk.js": "/static/js/453.8d4e7591.chunk.js",
+    "static/media/gal5.jpg": "/static/media/gal5.7e0031c0dcd186ee1a60.jpg",
+    "static/media/gal3.jpg": "/static/media/gal3.632a749a1f0977d1f9cc.jpg",
+    "static/media/goa1.jpg": "/static/media/goa1.76c8c546098ebc00c11a.jpg",
+    "static/media/london.jpg": "/static/media/london.d422badddf1e6fc266f0.jpg",
+    "static/media/mumbai.jpg": "/static/media/mumbai.588ba93d2f15b9522e73.jpg",
+    "static/media/singapore.jpg": "/static/media/singapore.fe7d1d141fface2669ab.jpg",
+    "static/media/dubai.jpg": "/static/media/dubai.aa5193cc08835649f53d.jpg",
+    "static/media/gal1.jpg": "/static/media/gal1.dcd6b06e23fc0275f0ae.jpg",
+    "static/media/gal2.jpg": "/static/media/gal2.39a6d78472cc2f31b85a.jpg",
+    "static/media/delhiget.jpg": "/static/media/delhiget.0bea57f59a5c908419e2.jpg",
+    "static/media/tavel.jpg": "/static/media/tavel.c910cf5c1ac0d57e7385.jpg",
+    "static/media/gal4.jpg": "/static/media/gal4.863badd8373cfc7c3df8.jpg",
+    "static/media/travelo.jpg": "/static/media/travelo.ddc1cb617c07b073d5d0.jpg",
+    "index.html": "/index.html",
+    "main.65c90b67.css.map": "/static/css/main.65c90b67.css.map",
+    "main.7510d8fd.js.map": "/static/js/main.7510d8fd.js.map",
+    "453.8d4e7591.chunk.js.map": "/static/js/453.8d4e7591.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.65c90b67.css",
+    "static/js/main.7510d8fd.js"
+  ]
+}
