@@ -92,7 +92,7 @@ function Header() {
         tabIndex={0}
       />
       <a href="/" className="logo">
-        <span>T</span>Travelo
+        <span>T</span>ravelo
       </a>
       <nav className={`navbar ${menuActive ? "active" : ""}`}>
         {NAV_ITEMS.map((item) => (
