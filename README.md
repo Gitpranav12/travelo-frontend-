@@ -4,16 +4,16 @@ A full-featured Ticket Booking platform built with the **MERN Stack** (MongoDB, 
 
 ---
 
-## 🚀 Features
-
-- User Registration & Login (with JWT)
-- Ticket Booking with dynamic destinations (stored in MongoDB)
-- Contact Us form with MongoDB storage
-- User Profile with Avatar support
-- Forgot Password feature
-- Email Notification on booking (via Nodemailer & Gmail SMTP)
-- Fully responsive UI with React and Tailwind CSS
-- Clean Folder Structure & REST API
+ Key Features
+✅ User Functionality
+🔐 Register/Login System with secure JWT authentication
+🔄 Forgot Password via email (SMTP/Gmail)
+🧾 Book Tickets with dynamic From-To destination search
+📬 Contact Us Form — sends user queries directly to admin inbox
+📥 Email Notifications — automated confirmation on bookings
+💬 AI Chatbot — integrated virtual assistant for user support
+📱 Responsive UI — optimized for mobile, tablet, and desktop
+🔔 SweetAlerts — user-friendly alerts for actions and confirmations
 
 ---
 
