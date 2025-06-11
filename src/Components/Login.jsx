@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../context/UserContext"; // ✅ import context
+import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
 
-// 🟢 NEW: Define your API base URL using the environment variable
+// Define your API base URL using the environment variable
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Login = () => {
@@ -11,13 +11,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { loginUser } = useContext(UserContext); // ✅ use context
+  const { loginUser } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
     try {
-      // 🟢 UPDATED API CALL FOR LOGIN 🟢
       const res = await fetch(`${API_BASE_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,9 +43,9 @@ const Login = () => {
         });
         navigate("/");
       }
-    } catch (err) { // Catch the actual error object
-      console.error("Login error:", err); // Log the actual error for debugging
-      setError("Server error. Please try again later."); // More user-friendly message
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Server error. Please try again later.");
       Swal.fire({
         icon: "error",
         title: "Server Error",
@@ -57,34 +56,56 @@ const Login = () => {
   };
 
   return (
-    <div className="login-form-container">
-      <Link to="/">
-        <i className="fas fa-times" id="form-close" />
-      </Link>
-      <form onSubmit={handleSubmit}>
-        <h3>Login</h3>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <input
-          type="email"
-          className="box"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          className="box"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input type="submit" value="login now" className="btn" />
-        <p>
-          don't have any account? <Link to="/register">register now</Link>
-        </p>
-      </form>
+    <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+      {/* 🔹 Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          zIndex: -1,
+        }}
+      >
+        <source src="/background.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* 🔹 Login Form */}
+      <div className="login-form-container">
+        <Link to="/">
+          <i className="fas fa-times" id="form-close" />
+        </Link>
+        <form onSubmit={handleSubmit}>
+          <h3>Login</h3>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <input
+            type="email"
+            className="box"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            className="box"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <input type="submit" value="login now" className="btn" />
+          <p>
+            don't have any account? <Link to="/register">register now</Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 };
