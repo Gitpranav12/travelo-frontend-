@@ -14,6 +14,7 @@ A full-featured Ticket Booking platform built with the **MERN Stack** (MongoDB, 
 - Email Notification on booking (via Nodemailer & Gmail SMTP)
 - Fully responsive UI with React and Tailwind CSS
 - Clean Folder Structure & REST API
+- 💬 AI Chatbot — integrated virtual assistant for user support
 
 ---
 
