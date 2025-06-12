@@ -71,7 +71,7 @@ const Register = () => {
                     zIndex: -1,
                 }}
             >
-                <source src="/background.mp4" type="video/mp4" />
+                <source src="/background1.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
 
@@ -119,6 +119,9 @@ const Register = () => {
                     <p>
                         already have an account? <Link to="/login">login now</Link>
                     </p>
+                      <p>
+                            <Link to="/forgotpassword">Forgot Password?</Link> {/* Naya Link */}
+                      </p>
                 </form>
             </div>
         </div>
