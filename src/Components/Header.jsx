@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import ProfileIcon from "./ProfileIcon";
 import { UserContext } from "../context/UserContext";
+import debounce from "lodash.debounce";
 
 const NAV_ITEMS = ["home", "book", "packages", "services", "gallery", "contact"];
-const BASE_URL = `${process.env.REACT_APP_BACKEND_URL}/cities`; 
+const BASE_URL = `${process.env.REACT_APP_BACKEND_URL}/cities`;
 
 // Custom hook for handling window resize
 const useWindowSize = () => {
@@ -17,37 +18,43 @@ const useWindowSize = () => {
   return windowSize;
 };
 
-// Custom hook for fetching and managing search suggestions
 const useSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  useEffect(() => {
-    if (!searchTerm) {
+  const fetchCities = async (query) => {
+    if (!query) {
       setSuggestions([]);
       return;
     }
-    const fetchCities = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}?search=${searchTerm}`); // This now uses the correct BASE_URL
-        if (!res.ok) throw new Error("City not found");
-        const data = await res.json();
-        setSuggestions(data.map(({ name }) => name));
-        setShowSuggestions(true);
-      } catch {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
-    };
-    const debounceFetch = setTimeout(fetchCities, 300);
-    return () => clearTimeout(debounceFetch);
-  }, [searchTerm]);
+    try {
+      const res = await fetch(`${BASE_URL}?search=${query}`);
+      if (!res.ok) throw new Error("City not found");
+      const data = await res.json();
+      setSuggestions(data.map(({ name }) => name));
+      setShowSuggestions(true);
+    } catch {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
 
-  return { searchTerm, setSearchTerm, suggestions, showSuggestions, setShowSuggestions };
+  const debouncedFetch = useRef(debounce(fetchCities, 300)).current;
+
+  useEffect(() => {
+    debouncedFetch(searchTerm);
+  }, [searchTerm, debouncedFetch]);
+
+  return {
+    searchTerm,
+    setSearchTerm,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+  };
 };
 
-// Custom hook for detecting clicks outside a referenced element
 const useClickOutside = (ref, callback) => {
   useEffect(() => {
     const handleClick = (e) => {
