@@ -8,6 +8,7 @@ import Profile from './Components/Profile'; // Profile component agar hai
 import ForgotPassword from './Components/ForgotPassword'; // ForgotPassword ko import karein
 import ResetPassword from './Components/ResetPassword';   // ResetPassword ko import karein
 import { UserProvider } from './context/UserContext';
+import KommunicateChat from './chat'; // KommunicateChat ko import karein
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/forgotpassword" element={<ForgotPassword />} />         {/* Naya route */}
                 <Route path="/resetpassword/:resettoken" element={<ResetPassword />} /> {/* Naya route token ke saath */}
             </Routes>
+             <KommunicateChat />
         </UserProvider>
     );
 }

@@ -229,7 +229,7 @@ header .icons i {
 .book .row form {
   flex: 1 1 40rem;
   padding: 2rem;
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+ box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   border-radius: 0.5rem;
 }
 .book .row form .inputBox {
@@ -402,7 +402,9 @@ header .icons i {
   width: 100%;
 }
 .footer {
-  background: #333;
+  background: linear-gradient(334deg,#ff4dc8,#2d5580,#622112,#837f99,#efd189);
+  background-size: 300% 300%;
+  animation: gradient-animation 5s ease infinite;
 }
 
 .footer .box-container {
@@ -466,7 +468,9 @@ header .icons i {
     top: 100%;
     right: 0;
     left: 0;
-    background: #333;
+    background: linear-gradient(334deg,#ff4dc8,#2d5580,#622112,#837f99,#efd189);
+  background-size: 300% 300%;
+  animation: gradient-animation 5s ease infinite;
     border-top: 0.1rem solid rgb(255, 255, 255, 0.2);
     padding: 1rem 2rem;
     clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
@@ -475,7 +479,6 @@ header .icons i {
   header .navbar.active {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   }
-
   header .navbar a {
     display: block;
     border-radius: 0.5rem;
@@ -484,7 +487,6 @@ header .icons i {
     background: #222;
   }
 }
-
 @media (max-width: 450px) {
   html {
     font-size: 50%;
@@ -501,7 +503,9 @@ header .icons i {
   justify-content: space-between;
   /* Pushes items to the edges */
   padding: 1rem 5%;
-  background-color: #333;
+   background: linear-gradient(334deg,#ff4dc8,#2d5580,#622112,#837f99,#efd189);
+  background-size: 300% 300%;
+  animation: gradient-animation 5s ease infinite;
   color: #fff;
   position: fixed;
   top: 0;
@@ -510,6 +514,17 @@ header .icons i {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 /* Logo Styling */
 .logo {
@@ -633,4 +648,25 @@ header .icons i {
   .search-form {
     width: 90%;
   }
+}
+
+.copywrite{
+  text-align: center;
+  padding: 1rem;
+  background: transparent;
+  color: #fff;
+  font-size: 1.5rem;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+.copywrite a:hover {
+  text-decoration: underline;
+}
+#copywrite-link{
+  color: #fff;
+  text-decoration: uppercase;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 4px;
 }
