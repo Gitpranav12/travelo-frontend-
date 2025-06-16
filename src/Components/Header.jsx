@@ -7,7 +7,6 @@ import debounce from "lodash.debounce";
 const NAV_ITEMS = ["home", "book", "packages", "services", "gallery", "contact"];
 const BASE_URL = `${process.env.REACT_APP_BACKEND_URL}/cities`;
 
-// Custom hook for handling window resize
 const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState(window.innerWidth);
   useEffect(() => {
@@ -18,29 +17,44 @@ const useWindowSize = () => {
   return windowSize;
 };
 
+// ✅ City search hook
 const useSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const cache = useRef({});
 
   const fetchCities = async (query) => {
     if (!query) {
       setSuggestions([]);
       return;
     }
+
+    if (cache.current[query]) {
+      setSuggestions(cache.current[query]);
+      setShowSuggestions(true);
+      return;
+    }
+
     try {
+      setLoading(true);
       const res = await fetch(`${BASE_URL}?search=${query}`);
       if (!res.ok) throw new Error("City not found");
       const data = await res.json();
-      setSuggestions(data.map(({ name }) => name));
+      const names = data.map(({ name }) => name);
+      cache.current[query] = names;
+      setSuggestions(names);
       setShowSuggestions(true);
     } catch {
       setSuggestions([]);
       setShowSuggestions(false);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const debouncedFetch = useRef(debounce(fetchCities, 300)).current;
+  const debouncedFetch = useRef(debounce(fetchCities, 150)).current;
 
   useEffect(() => {
     debouncedFetch(searchTerm);
@@ -52,6 +66,8 @@ const useSearch = () => {
     suggestions,
     showSuggestions,
     setShowSuggestions,
+    fetchCities,
+    loading,
   };
 };
 
@@ -71,7 +87,16 @@ function Header() {
   const { user } = useContext(UserContext);
   const suggestionsRef = useRef(null);
   const windowWidth = useWindowSize();
-  const { searchTerm, setSearchTerm, suggestions, showSuggestions, setShowSuggestions } = useSearch();
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+    fetchCities,
+    loading,
+  } = useSearch();
 
   const [menuActive, setMenuActive] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
@@ -103,11 +128,7 @@ function Header() {
       </a>
       <nav className={`navbar ${menuActive ? "active" : ""}`}>
         {NAV_ITEMS.map((item) => (
-          <a
-            key={item}
-            href={`#${item.toLowerCase()}`}
-            onClick={() => setMenuActive(false)}
-          >
+          <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenuActive(false)}>
             {item}
           </a>
         ))}
@@ -120,7 +141,13 @@ function Header() {
           role="button"
           tabIndex={0}
         />
-        {user ? <ProfileIcon /> : <Link to="/login"><i className="fas fa-user" id="login-btn" /></Link>}
+        {user ? (
+          <ProfileIcon />
+        ) : (
+          <Link to="/login">
+            <i className="fas fa-user" id="login-btn" />
+          </Link>
+        )}
       </div>
       <form
         className={`search-form ${searchActive ? "active" : ""}`}
@@ -133,15 +160,32 @@ function Header() {
           placeholder="Search here..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => {
+            if (searchTerm.trim().length > 0) {
+              fetchCities(searchTerm);
+              setShowSuggestions(true);
+            }
+          }}
           autoComplete="off"
         />
-        {showSuggestions && suggestions.length > 0 && (
+        {showSuggestions && (
           <ul className="suggestions-list">
-            {suggestions.map((city) => (
-              <li key={city} onClick={() => handleSelectSuggestion(city)}>
-                {city}
+            {loading ? (
+              <li className="loader-wrapper">
+                <div className="circle"></div>
+                <div className="circle"></div>
+                <div className="circle"></div>
+                <div className="shadow"></div>
+                <div className="shadow"></div>
+                <div className="shadow"></div>
               </li>
-            ))}
+            ) : (
+              suggestions.map((city) => (
+                <li key={city} onClick={() => handleSelectSuggestion(city)}>
+                  {city}
+                </li>
+              ))
+            )}
           </ul>
         )}
       </form>

@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import tavel from './assets/tavel.jpg'; // Assuming this path is correct for your asset
+import tavel from './assets/tavel.jpg';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import debounce from "lodash.debounce"; // 👈 Add debounce
 
-// 🟢 NEW: Define your API base URL using the environment variable
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Helper to decode JWT token to extract user info
 const parseJwt = (token) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
@@ -32,6 +31,7 @@ function Book() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const suggestionsRef = useRef(null);
+  const [loadingCities, setLoadingCities] = useState(false); // 👈 Loader state
 
   const [responseMsg, setResponseMsg] = useState("");
   const [showPopup, setShowPopup] = useState(false);
@@ -41,8 +41,8 @@ function Book() {
       setSuggestions([]);
       return;
     }
+    setLoadingCities(true); // Start loader
     try {
-      // 🟢 UPDATED API CALL FOR CITIES 🟢
       const res = await fetch(`${API_BASE_URL}/cities?search=${input}`);
       const data = await res.json();
       if (res.ok) {
@@ -53,14 +53,21 @@ function Book() {
       console.error("City fetch error:", err);
       setSuggestions([]);
     }
+    setLoadingCities(false); // Stop loader
   };
+
+  const debouncedFetchCities = useRef(
+    debounce((input) => {
+      fetchCities(input);
+    }, 400)
+  ).current;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
     if (name === "from" || name === "to") {
-      fetchCities(value);
+      debouncedFetchCities(value);
       setActiveField(name);
       setShowSuggestions(true);
     }
@@ -112,19 +119,17 @@ function Book() {
 
     if (!userId && token) {
       const decoded = parseJwt(token);
-      // Ensure we're using the correct field from the decoded token (id or _id)
-      userId = decoded?.id || decoded?._id; 
+      userId = decoded?.id || decoded?._id;
     }
 
     if (!userId) {
       setResponseMsg("User ID not found. Please login again.");
-      setShowPopup(true); // Show popup for this message as well
-      setTimeout(() => setShowPopup(false), 5000); // Hide after 5 seconds
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 5000);
       return;
     }
 
     try {
-      // 🟢 UPDATED API CALL FOR BOOKING 🟢
       const response = await fetch(`${API_BASE_URL}/bookings/book`, {
         method: "POST",
         headers: {
@@ -140,22 +145,112 @@ function Book() {
         setResponseMsg(data.message);
         setShowPopup(true);
         setFormData({ from: '', to: '', guests: '', arrival: '', leaving: '' });
-        // Reduced popup display time for better UX, adjust as needed
-        setTimeout(() => setShowPopup(false), 5000); // Example: hide after 5 seconds
+        setTimeout(() => setShowPopup(false), 5000);
       } else {
         setResponseMsg(data.message || "Booking failed");
-        setShowPopup(true); // Show popup for errors too
-        setTimeout(() => setShowPopup(false), 5000); // Hide after 5 seconds
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 5000);
       }
     } catch (err) {
-      console.error("Booking submission error:", err); // Log the actual error for debugging
+      console.error("Booking submission error:", err);
       setResponseMsg("Server error. Please try again.");
-      setShowPopup(true); // Show popup for server errors
-      setTimeout(() => setShowPopup(false), 5000); // Hide after 5 seconds
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 5000);
     }
   };
 
   return (
+    
+   <>
+  <style>{`
+  .city-loader-wrapper {
+    width: 200px;
+    height: 60px;
+    position: relative;
+    margin: 0 auto;
+    z-index: 1;
+  }
+
+  .city-loader-wrapper .circle {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    border-radius: 50%;
+    background-color: #333;
+    left: 15%;
+    transform-origin: 50%;
+    animation: circle7124 .5s alternate infinite ease;
+  }
+
+  @keyframes circle7124 {
+    0% {
+      top: 60px;
+      height: 5px;
+      border-radius: 50px 50px 25px 25px;
+      transform: scaleX(1.7);
+    }
+    40% {
+      height: 20px;
+      border-radius: 50%;
+      transform: scaleX(1);
+    }
+    100% {
+      top: 0%;
+    }
+  }
+
+  .city-loader-wrapper .circle:nth-child(2) {
+    left: 45%;
+    animation-delay: .2s;
+  }
+
+  .city-loader-wrapper .circle:nth-child(3) {
+    left: auto;
+    right: 15%;
+    animation-delay: .3s;
+  }
+
+  .city-loader-wrapper .shadow {
+    width: 20px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.4);
+    position: absolute;
+    top: 62px;
+    transform-origin: 50%;
+    z-index: -1;
+    left: 15%;
+    filter: blur(1px);
+    animation: shadow046 .5s alternate infinite ease;
+  }
+
+  @keyframes shadow046 {
+    0% {
+      transform: scaleX(1.5);
+    }
+    40% {
+      transform: scaleX(1);
+      opacity: .7;
+    }
+    100% {
+      transform: scaleX(.2);
+      opacity: .4;
+    }
+  }
+
+  .city-loader-wrapper .shadow:nth-child(4) {
+    left: 45%;
+    animation-delay: .2s;
+  }
+
+  .city-loader-wrapper .shadow:nth-child(5) {
+    left: auto;
+    right: 15%;
+    animation-delay: .3s;
+  }
+`}</style>
+
+
     <section className="book" id="book">
       <h1 className="heading">
         <span>b</span><span>o</span><span>o</span><span>k</span>
@@ -181,14 +276,14 @@ function Book() {
                 onKeyDown={handleKeyDown}
                 onFocus={() => {
                   if (formData[field].length > 0) {
-                    fetchCities(formData[field]);
+                    debouncedFetchCities(formData[field]);
                     setActiveField(field);
                     setShowSuggestions(true);
                   }
                 }}
                 required
               />
-              {showSuggestions && activeField === field && suggestions.length > 0 && (
+              {showSuggestions && activeField === field && (
                 <ul style={{
                   listStyleType: "none",
                   margin: 0,
@@ -203,19 +298,36 @@ function Book() {
                   zIndex: 10,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
                 }}>
-                  {suggestions.map((s, i) => (
-                    <li key={i}
-                      onClick={() => handleSuggestionClick(s)}
-                      style={{
-                        padding: "5px",
-                        cursor: "pointer",
-                        backgroundColor: highlightIndex === i ? "#eee" : "white"
-                      }}
-                      onMouseDown={(e) => e.preventDefault()}
-                    >
-                      {s}
+                 {loadingCities ? (
+  <li style={{ padding: "10px", textAlign: "center" }}>
+    <div className="city-loader-wrapper">
+      <div className="circle"></div>
+      <div className="circle"></div>
+      <div className="circle"></div>
+      <div className="shadow"></div>
+      <div className="shadow"></div>
+      <div className="shadow"></div>
+    </div>
+  </li>
+): suggestions.length > 0 ? (
+                    suggestions.map((s, i) => (
+                      <li key={i}
+                        onClick={() => handleSuggestionClick(s)}
+                        style={{
+                          padding: "5px",
+                          cursor: "pointer",
+                          backgroundColor: highlightIndex === i ? "#eee" : "white"
+                        }}
+                        onMouseDown={(e) => e.preventDefault()}
+                      >
+                        {s}
+                      </li>
+                    ))
+                  ) : (
+                    <li style={{ padding: "8px", textAlign: "center", color: "#888" }}>
+                      No results
                     </li>
-                  ))}
+                  )}
                 </ul>
               )}
             </div>
@@ -256,24 +368,24 @@ function Book() {
         </form>
       </div>
 
-      {responseMsg && !showPopup && <p style={{ color: "green", marginTop: "1rem" }}>{responseMsg}</p>} {/* Only show if popup is not active */}
+      {responseMsg && !showPopup && <p style={{ color: "green", marginTop: "1rem" }}>{responseMsg}</p>}
 
       {showPopup && (
         <div style={{
           position: 'fixed',
           top: '60px',
           right: '10px',
-          backgroundColor: responseMsg.includes('failed') || responseMsg.includes('error') ? '#f44336' : '#4caf50', // Red for errors, green for success
+          backgroundColor: responseMsg.includes('failed') || responseMsg.includes('error') ? '#f44336' : '#4caf50',
           color: 'white',
           padding: '10px 20px',
           fontSize: '12px',
           height: '40px',
           borderRadius: '5px',
           boxShadow: '0 0 10px rgba(0,0,0,0.3)',
-          display: 'flex', // Use flex for alignment
-          alignItems: 'center', // Center vertically
-          justifyContent: 'space-between', // Space out message and button
-          zIndex: 1000 // Ensure it's on top
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          zIndex: 1000
         }}>
           {responseMsg}
           <button onClick={() => setShowPopup(false)} style={{
@@ -282,12 +394,13 @@ function Book() {
             border: 'none',
             color: 'white',
             cursor: 'pointer',
-            fontSize: '16px', // Make X button a bit larger
-            lineHeight: '1', // Ensure it's vertically centered
+            fontSize: '16px',
+            lineHeight: '1',
           }}>X</button>
         </div>
       )}
     </section>
+   </>
   );
 }
 export default Book;
