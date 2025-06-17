@@ -168,26 +168,28 @@ function Header() {
           }}
           autoComplete="off"
         />
-        {showSuggestions && (
-          <ul className="suggestions-list">
-            {loading ? (
-              <li className="loader-wrapper">
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="shadow"></div>
-                <div className="shadow"></div>
-                <div className="shadow"></div>
-              </li>
-            ) : (
-              suggestions.map((city) => (
-                <li key={city} onClick={() => handleSelectSuggestion(city)}>
-                  {city}
-                </li>
-              ))
-            )}
-          </ul>
-        )}
+     {showSuggestions && (
+  <ul className="suggestions-list">
+    {loading ? (
+      <li className="loader-wrapper">
+        <div className="circle"></div>
+        <div className="circle"></div>
+        <div className="circle"></div>
+        <div className="shadow"></div>
+        <div className="shadow"></div>
+        <div className="shadow"></div>
+      </li>
+    ) : suggestions.length > 0 ? (
+      suggestions.map((city) => (
+        <li key={city} onClick={() => handleSelectSuggestion(city)}>
+          {city}
+        </li>
+      ))
+    ) : (
+      <li className="no-result">No results </li>
+    )}
+  </ul>
+)}
       </form>
     </header>
   );
