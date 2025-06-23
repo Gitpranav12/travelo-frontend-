@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { user, loginUser, logoutUser } = useContext(UserContext);
@@ -112,6 +113,11 @@ const Profile = () => {
         <ul style={styles.sidebarList}>
           <li style={styles.active}>
             👤 My Profile <span style={styles.dot}></span>
+          </li>
+          <li>
+            <Link to="/mybookings" style={{ textDecoration: 'none', color: '#0077ff' }}>
+              ✈️ My Bookings
+            </Link>
           </li>
           <li>
             <button onClick={handleLogout} className="header-button" style={{ background: "none", border: "none", color: "#0077ff", cursor: "pointer", fontSize: "15px" }}>

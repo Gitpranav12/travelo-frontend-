@@ -9,6 +9,7 @@ import ForgotPassword from './Components/ForgotPassword'; // ForgotPassword ko i
 import ResetPassword from './Components/ResetPassword';   // ResetPassword ko import karein
 import { UserProvider } from './context/UserContext';
 import KommunicateChat from './chat'; // KommunicateChat ko import karein
+import MyBookings from './Components/MyBookings'; // MyBookings component ko import karein
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} /> {/* Register route */}
                 <Route path="/profile" element={<Profile />} /> {/* Profile route */}
+                <Route path='/mybookings' element={<MyBookings />} /> {/* MyBookings route */}
                 <Route path="/forgotpassword" element={<ForgotPassword />} />         {/* Naya route */}
                 <Route path="/resetpassword/:resettoken" element={<ResetPassword />} /> {/* Naya route token ke saath */}
             </Routes>
