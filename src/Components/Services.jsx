@@ -1,13 +1,15 @@
 import React from "react";
+
 const DESCRIPTION =
   "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore commodi earum, quis voluptate exercitationem ut minima itaque iusto ipsum corrupti!";
+
 const SERVICES = [
   { icon: "fas fa-hotel", title: "affordable hotels" },
   { icon: "fas fa-utensils", title: "food and drinks" },
-  { icon: "fas fa-bullhorn", title: "safty guide" },
   { icon: "fas fa-globe-asia", title: "around the world" },
   { icon: "fas fa-plane", title: "fastest Travel" },
   { icon: "fas fa-hiking", title: "adventures" },
+  { icon: "fas fa-headset", title: "24/7 Support" }, // ✅ NEW CARD ADDED
 ];
 
 const HEADING = "services".split("");
@@ -20,8 +22,9 @@ function Services() {
           <span key={i}>{char}</span>
         ))}
       </h1>
-
+ 
       <div className="box-container">
+       
         {SERVICES.map(({ icon, title }, i) => (
           <div className="box" key={i}>
             <i className={icon} />
@@ -33,4 +36,5 @@ function Services() {
     </section>
   );
 }
+
 export default Services;

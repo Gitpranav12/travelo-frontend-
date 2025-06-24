@@ -115,8 +115,13 @@ const Profile = () => {
             👤 My Profile <span style={styles.dot}></span>
           </li>
           <li>
-            <Link to="/mybookings" style={{ textDecoration: 'none', color: '#0077ff' }}>
+            <Link to="/mybookings" style={{ textDecoration: 'none', color: '#090040' }}>
               ✈️ My Bookings
+            </Link>
+          </li>
+           <li>
+            <Link to="/forgotpassword" style={{ textDecoration: 'none', color: '#090040' }}>
+             🔐 Reset Password
             </Link>
           </li>
           <li>
@@ -224,7 +229,7 @@ const styles = {
   sidebar: {
     width: "220px",
     padding: "20px",
-    background: "#fff",
+   
     borderRight: "1px solid #eee",
   },
   sidebarTitle: {
@@ -259,7 +264,7 @@ const styles = {
   main: {
     flex: 1,
     padding: "30px",
-    background: "#fff",
+   
   },
   header: {
     display: "flex",
