@@ -38,7 +38,7 @@ function Footer() {
       </div>
        <div className="copywrite">
         
-      Travelo Booking. Designed & Developed <br />❤️|| by <a href="https://designerpranav.netlify.app/" id="copywrite-link">PSJ</a> || 
+      Travelo Booking Designed & Developed <br />❤️|| by <a href="https://designerpranav.netlify.app/" id="copywrite-link">PSJ</a> || 
       
        </div>
     </section>

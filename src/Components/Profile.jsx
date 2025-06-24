@@ -6,17 +6,34 @@ import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { user, loginUser, logoutUser } = useContext(UserContext);
+  // Initialize states with user data, falling back to empty string
   const [name, setName] = useState(user?.name || "");
   const [avatar, setAvatar] = useState(user?.avatar || "");
   const [preview, setPreview] = useState(user?.avatar || "");
-  const [gender, setGender] = useState("");
-  const [dob, setDob] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [maritalStatus, setMaritalStatus] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [gender, setGender] = useState(user?.gender || ""); // Initialized from user
+  const [dob, setDob] = useState(user?.dob || "");           // Initialized from user
+  const [nationality, setNationality] = useState(user?.nationality || ""); // Initialized from user
+  const [maritalStatus, setMaritalStatus] = useState(user?.maritalStatus || ""); // Initialized from user
+  const [city, setCity] = useState(user?.city || "");         // Initialized from user
+  const [state, setState] = useState(user?.state || "");       // Initialized from user
+  const [phoneNumber, setPhoneNumber] = useState(user?.number || ""); // NEW: Phone number state, initialized from user.number
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setAvatar(user.avatar || "");
+      setPreview(user.avatar || "");
+      setGender(user.gender || "");
+      setDob(user.dob || "");
+      setNationality(user.nationality || "");
+      setMaritalStatus(user.maritalStatus || "");
+      setCity(user.city || "");
+      setState(user.state || "");
+      setPhoneNumber(user.number || ""); // Update phone number state based on user.number
+    }
+  }, [user]);
 
   useEffect(() => {
     const styleTag = document.createElement("style");
@@ -71,7 +88,7 @@ const Profile = () => {
 
   const handleSave = () => {
     const updatedUser = {
-      ...user,
+      ...user, // Keep existing user properties
       name,
       avatar,
       gender,
@@ -80,18 +97,19 @@ const Profile = () => {
       maritalStatus,
       city,
       state,
+      number: phoneNumber, // Include the phone number from state as 'number'
     };
-    loginUser(updatedUser);
-     Swal.fire({
-            icon: "success",
-            title: "Profile Updated",
-            text: "Your profile has been successfully updated.",
-            confirmButtonColor: "#3085d6",
-          });
+    loginUser(updatedUser); // Update the user object in your context
+    Swal.fire({
+      icon: "success",
+      title: "Profile Updated",
+      text: "Your profile has been successfully updated.",
+      confirmButtonColor: "#3085d6",
+    });
   };
 
   const calculateProgress = () => {
-    let totalFields = 8;
+    let totalFields = 9; 
     let filled = 0;
     if (name.trim()) filled++;
     if (avatar) filled++;
@@ -101,6 +119,8 @@ const Profile = () => {
     if (maritalStatus) filled++;
     if (city.trim()) filled++;
     if (state.trim()) filled++;
+    if (phoneNumber.trim()) filled++; // Check if phone number is filled
+
     return Math.floor((filled / totalFields) * 100);
   };
   const progress = calculateProgress();
@@ -119,9 +139,9 @@ const Profile = () => {
               ✈️ My Bookings
             </Link>
           </li>
-           <li>
+          <li>
             <Link to="/forgotpassword" style={{ textDecoration: 'none', color: '#090040' }}>
-             🔐 Reset Password
+              🔐 Reset Password
             </Link>
           </li>
           <li>
@@ -206,7 +226,27 @@ const Profile = () => {
           <h3 style={styles.sectionTitle}>Contact Details</h3>
           <p style={styles.contactNote}>Add contact information to receive booking details & other alerts</p>
           <div className="contactFlex" style={styles.contactFlex}>
-            <button style={styles.mobileBtn}>ADD MOBILE NUMBER</button>
+            {/* Conditional render for phone number display or add button */}
+            {phoneNumber ? (
+              <div style={styles.mobileBox}> {/* New style for phone number display */}
+                <span style={styles.mobileLabel}>MOBILE NUMBER</span><br />
+                <span style={styles.mobileValue}>{phoneNumber}</span>
+                {/* Optional: Add an edit button here if you want to allow direct editing */}
+              </div>
+            ) : (
+              <button
+                style={styles.mobileBtn}
+                onClick={() => {
+                  const newPhone = prompt("Please enter your mobile number:");
+                  if (newPhone) {
+                    setPhoneNumber(newPhone);
+                  }
+                }}
+              >
+                ADD MOBILE NUMBER
+              </button>
+            )}
+
             <div style={styles.emailBox}>
               <span style={styles.emailLabel}>EMAIL ID</span><br />
               <span style={styles.emailValue}>{user?.email || "Not Provided"}</span>
@@ -223,14 +263,15 @@ const styles = {
   container: {
     display: "flex",
     fontFamily: "sans-serif",
-    background: "#f9f9f9",
+    background: "#6e7f80",
     minHeight: "100vh",
   },
   sidebar: {
     width: "220px",
     padding: "20px",
-   
+    background: "#ffffff",
     borderRight: "1px solid #eee",
+    boxShadow: "2px 0 5px rgba(0,0,0,0.05)",
   },
   sidebarTitle: {
     fontSize: "14px",
@@ -264,7 +305,10 @@ const styles = {
   main: {
     flex: 1,
     padding: "30px",
-   
+    background: "#f9f9fb",
+    borderRadius: "8px",
+    margin: "20px",
+    boxShadow: " rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px",
   },
   header: {
     display: "flex",
@@ -381,6 +425,23 @@ const styles = {
     textTransform: "uppercase",
   },
   emailValue: {
+    fontWeight: "bold",
+    color: "#000",
+    fontSize: "17px",
+  },
+  mobileBox: {
+    backgroundColor: "#f5f5f5",
+    padding: "10px 16px",
+    borderRadius: "8px",
+    flexGrow: 1,
+    minWidth: "240px",
+  },
+  mobileLabel: {
+    fontSize: "12px",
+    color: "#888",
+    textTransform: "uppercase",
+  },
+  mobileValue: {
     fontWeight: "bold",
     color: "#000",
     fontSize: "17px",
