@@ -1,30 +1,31 @@
-// client/src/Components/Login.jsx
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
 
-// Backend API URL prefix ko confirm karein
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000/api';
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false); // ✅ Loader state
     const navigate = useNavigate();
     const { loginUser } = useContext(UserContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true); // ✅ Start loader
         try {
-            // URL badla gaya hai: /users/login se /auth/login
             const res = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
             const data = await res.json();
+            setLoading(false); // ✅ Stop loader
+
             if (!res.ok) {
                 setError(data.message || "Login failed");
                 Swal.fire({
@@ -47,6 +48,7 @@ const Login = () => {
             }
         } catch (err) {
             console.error("Login error:", err);
+            setLoading(false); // ✅ Stop loader on error
             setError("Server error. Please try again later.");
             Swal.fire({
                 icon: "error",
@@ -59,7 +61,6 @@ const Login = () => {
 
     return (
         <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
-            {/* Background Video */}
             <video
                 autoPlay
                 loop
@@ -78,14 +79,23 @@ const Login = () => {
                 Your browser does not support the video tag.
             </video>
 
-            {/* Login Form */}
             <div className="login-form-container">
                 <Link to="/">
                     <i className="fas fa-times" id="form-close" />
                 </Link>
                 <form onSubmit={handleSubmit}>
                     <h3>Login</h3>
+
+                    {/* ✅ Show Loader */}
+                    {loading && (
+                        <p style={{ color: "blue", fontWeight: "bold" }}>
+                            Please wait... logging you in
+                        </p>
+                    )}
+
+                    {/* ✅ Show Error */}
                     {error && <p style={{ color: "red" }}>{error}</p>}
+
                     <input
                         type="email"
                         className="box"
@@ -102,12 +112,13 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <input type="submit" value="login now" className="btn" />
+                    <input type="submit" value="login now" className="btn" disabled={loading} />
+
                     <p>
                         don't have any account? <Link to="/register">register now</Link>
                     </p>
                     <p>
-                        <Link to="/forgotpassword">Forgot Password?</Link> {/* Naya Link */}
+                        <Link to="/forgotpassword">Forgot Password?</Link>
                     </p>
                 </form>
             </div>
