@@ -131,6 +131,11 @@ const Profile = () => {
       <div className="sidebar" style={styles.sidebar}>
         <h2 style={styles.sidebarTitle}>MY ACCOUNT</h2>
         <ul style={styles.sidebarList}>
+        <li>
+  <Link to="/" style={{ textDecoration: 'none', color: '#090040' }}>
+    🏠 Home
+  </Link>
+</li>
           <li style={styles.active}>
             👤 My Profile <span style={styles.dot}></span>
           </li>
