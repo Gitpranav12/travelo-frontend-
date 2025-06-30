@@ -11,6 +11,7 @@
     "axios": "^1.9.0",
     "framer-motion": "^12.16.0",
     "homepage": ".",
+    "jwt-decode": "^4.0.0",
     "lodash.debounce": "^4.0.8",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
