@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react"; // Add useCallback
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
@@ -13,8 +13,8 @@ const Login = () => {
     const navigate = useNavigate();
     const { loginUser } = useContext(UserContext);
 
-    // Function to handle Google credential response
-    // ⭐ IMPORTANT: Wrapped in useCallback with its dependencies ⭐
+    // Google credential response handle karne wala function, useCallback mein wrap kiya gaya hai.
+    // Isse ye function tabhi recreate hoga jab iski dependencies (setLoading, setError, loginUser, navigate) change hongi.
     const handleGoogleCredentialResponse = useCallback(async (response) => {
         console.log("Encoded JWT ID token from Google:", response.credential);
         setLoading(true);
@@ -61,10 +61,12 @@ const Login = () => {
                 confirmButtonColor: "#d33",
             });
         }
-    }, [setLoading, setError, loginUser, navigate]); // These are the dependencies of useCallback
+    }, [setLoading, setError, loginUser, navigate]); // Ye dependencies useCallback ke liye hain
 
-    // Google Sign-In Initialization
+    // Google Sign-In button ko initialize aur render karne ke liye useEffect.
+    // handleGoogleCredentialResponse ab useEffect ki dependency hai.
     useEffect(() => {
+        // Debugging ke liye: Apne browser console mein client ID dekhein
         console.log("DEBUG: REACT_APP_GOOGLE_CLIENT_ID:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
         if (window.google) {
@@ -75,11 +77,11 @@ const Login = () => {
                 auto_prompt: false
             });
 
-            // ⭐ Changed theme to 'filled_blue' for a dark button ⭐
+            // Google button ko render karein dark theme ke saath
             window.google.accounts.id.renderButton(
                 document.getElementById("googleSignInDiv"),
                 {
-                    theme: "filled_black", // Or "filled_black" for a black button
+                    theme: "filled_black", // Dark blue button (ya "filled_black" black ke liye)
                     size: "large",
                     text: "signin_with",
                     shape: "rectangular",
@@ -87,8 +89,7 @@ const Login = () => {
                 }
             );
         }
-    }, [handleGoogleCredentialResponse]); // ⭐ IMPORTANT: handleGoogleCredentialResponse is now a dependency of useEffect ⭐
-
+    }, [handleGoogleCredentialResponse]); // handleGoogleCredentialResponse yahan dependency mein hai
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -191,7 +192,6 @@ const Login = () => {
 
                     {/* Google Sign-In button container */}
                     <div style={{ marginTop: '20px', textAlign: 'center' }}>
-
                         <div id="googleSignInDiv"></div>
                     </div>
 
@@ -202,7 +202,6 @@ const Login = () => {
                         <Link to="/forgotpassword">Forgot Password?</Link>
                     </p>
                 </form>
-
             </div>
         </div>
     );
