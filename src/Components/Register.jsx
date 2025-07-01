@@ -1,4 +1,3 @@
-// Example: client/src/Components/Register.jsx (Agar aapke paas hai)
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -11,19 +10,21 @@ const Register = () => {
     const [number, setNumber] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false); // 🔄 Add loading state
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true); // Show loader
         try {
-            // URL badla gaya hai: /users/register se /auth/register
             const res = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, number, password }),
             });
             const data = await res.json();
+            setLoading(false); // Stop loader
             if (!res.ok) {
                 setError(data.message || "Registration failed");
                 Swal.fire({
@@ -40,9 +41,10 @@ const Register = () => {
                     timer: 1500,
                     showConfirmButton: false,
                 });
-                navigate("/login"); // Redirect to login page after successful registration
+                navigate("/login");
             }
         } catch (err) {
+            setLoading(false); // Stop loader
             console.error("Registration error:", err);
             setError("Server error. Please try again later.");
             Swal.fire({
@@ -56,7 +58,6 @@ const Register = () => {
 
     return (
         <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
-            {/* Background Video */}
             <video
                 autoPlay
                 loop
@@ -72,16 +73,15 @@ const Register = () => {
                 }}
             >
                 <source src="/background1.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
             </video>
 
-            {/* Register Form */}
-            <div className="login-form-container"> {/* Reusing login-form-container styling */}
+            <div className="login-form-container">
                 <Link to="/">
                     <i className="fas fa-times" id="form-close" />
                 </Link>
                 <form onSubmit={handleSubmit}>
                     <h3>Register</h3>
+                    {loading && <p style={{ color: "blue" }}>Registering, please wait...</p>} {/* 👈 Loader message */}
                     {error && <p style={{ color: "red" }}>{error}</p>}
                     <input
                         type="text"
@@ -100,7 +100,7 @@ const Register = () => {
                         required
                     />
                     <input
-                        type="text" // Or type="number" if you want numeric input
+                        type="text"
                         className="box"
                         placeholder="Enter your number"
                         value={number}
@@ -115,13 +115,13 @@ const Register = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <input type="submit" value="register now" className="btn" />
+                    <input type="submit" value={loading ? "Registering..." : "Register Now"} className="btn" disabled={loading} />
                     <p>
                         already have an account? <Link to="/login">login now</Link>
                     </p>
-                      <p>
-                            <Link to="/forgotpassword">Forgot Password?</Link> {/* Naya Link */}
-                      </p>
+                    <p>
+                        <Link to="/forgotpassword">Forgot Password?</Link>
+                    </p>
                 </form>
             </div>
         </div>
