@@ -1,4 +1,4 @@
-// Example: client/src/Components/Register.jsx (Agar aapke paas hai)
+// client/src/Components/Register.jsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -11,19 +11,22 @@ const Register = () => {
     const [number, setNumber] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false); // ⭐ Add loading state ⭐
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true); // ⭐ Set loading to true when submission starts ⭐
         try {
-            // URL badla gaya hai: /users/register se /auth/register
             const res = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, number, password }),
             });
             const data = await res.json();
+            setLoading(false); // ⭐ Set loading to false after response ⭐
+
             if (!res.ok) {
                 setError(data.message || "Registration failed");
                 Swal.fire({
@@ -44,6 +47,7 @@ const Register = () => {
             }
         } catch (err) {
             console.error("Registration error:", err);
+            setLoading(false); // ⭐ Set loading to false on error ⭐
             setError("Server error. Please try again later.");
             Swal.fire({
                 icon: "error",
@@ -82,6 +86,14 @@ const Register = () => {
                 </Link>
                 <form onSubmit={handleSubmit}>
                     <h3>Register</h3>
+
+                    {/* ⭐ Display loading message conditionally ⭐ */}
+                    {loading && (
+                        <p style={{ color: "blue", fontWeight: "bold" }}>
+                            Please wait... creating your account
+                        </p>
+                    )}
+
                     {error && <p style={{ color: "red" }}>{error}</p>}
                     <input
                         type="text"
@@ -115,13 +127,14 @@ const Register = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <input type="submit" value="register now" className="btn" />
+                    {/* ⭐ Disable submit button while loading ⭐ */}
+                    <input type="submit" value="register now" className="btn" disabled={loading} />
                     <p>
                         already have an account? <Link to="/login">login now</Link>
                     </p>
-                      <p>
-                            <Link to="/forgotpassword">Forgot Password?</Link> {/* Naya Link */}
-                      </p>
+                    <p>
+                        <Link to="/forgotpassword">Forgot Password?</Link>
+                    </p>
                 </form>
             </div>
         </div>

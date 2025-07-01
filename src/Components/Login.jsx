@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
@@ -11,12 +11,37 @@ const Login = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { loginUser } = useContext(UserContext);
+    const { loginUser } = useContext(UserContext); // Assuming loginUser handles setting user in context and local storage
+
+    // Google Sign-In Initialization
+    useEffect(() => {
+        // Check if window.google is available (script loaded)
+        if (window.google) {
+            window.google.accounts.id.initialize({
+                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredentialResponse, // Our new callback function
+                context: "signin", // Or "use" if appropriate
+                auto_prompt: false // Set to true if you want auto one-tap prompt
+            });
+
+            // Render the Google button into the specified div
+            window.google.accounts.id.renderButton(
+                document.getElementById("googleSignInDiv"), // Target element for the button
+                {
+                    theme: "filled_black",
+                    size: "large",
+                    text: "signin_with",
+                    shape: "rectangular",
+                    logo_alignment: "centre",
+                }
+            );
+            // Optional: for One Tap prompt
+            // window.google.accounts.id.prompt();
+        }
+    }, []); // Empty dependency array means this runs once on mount
 
     // Function to handle Google credential response
-    // Wrapped in useCallback to prevent re-creation on every render,
-    // which helps stabilize the useEffect dependency.
-    const handleGoogleCredentialResponse = useCallback(async (response) => {
+    const handleGoogleCredentialResponse = async (response) => {
         console.log("Encoded JWT ID token from Google:", response.credential);
         setLoading(true);
         setError("");
@@ -41,6 +66,7 @@ const Login = () => {
                 });
             } else {
                 localStorage.setItem("token", data.token);
+                // The 'loginUser' function in your UserContext should handle setting the user globally
                 loginUser(data.user); // Pass the user object received from backend
                 Swal.fire({
                     icon: "success",
@@ -62,39 +88,8 @@ const Login = () => {
                 confirmButtonColor: "#d33",
             });
         }
-    }, [setLoading, setError, loginUser, navigate]); // Dependencies for useCallback
+    };
 
-    // Google Sign-In Initialization
-    useEffect(() => {
-        // Add this console.log temporarily for debugging client_id issue if it persists
-        console.log("DEBUG: REACT_APP_GOOGLE_CLIENT_ID:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
-        // Check if window.google is available (script loaded)
-        if (window.google) {
-            window.google.accounts.id.initialize({
-                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredentialResponse, // Our new callback function
-                context: "signin", // Or "use" if appropriate
-                auto_prompt: false // Set to true if you want auto one-tap prompt
-            });
-
-            // Render the Google button into the specified div
-            window.google.accounts.id.renderButton(
-                document.getElementById("googleSignInDiv"), // Target element for the button
-                {
-                    theme: "filled_black", // Optional: Change theme to filled black
-                    size: "large",
-                    text: "signin_with",
-                    shape: "rectangular",
-                    logo_alignment: "center",
-                    width: 250, // Optional: Set width for the button
-                    // You can adjust width
-                }
-            );
-            // Optional: for One Tap prompt
-            // window.google.accounts.id.prompt();
-        }
-    }, [handleGoogleCredentialResponse]); // handleGoogleCredentialResponse is now a stable dependency
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -195,11 +190,11 @@ const Login = () => {
                     />
                     <input type="submit" value="login now" className="btn" disabled={loading} />
 
-                    {/* Google Sign-In button container */}
-                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
-
-                        <div id="googleSignInDiv"></div> {/* This is where Google button will render */}
-                    </div>
+                     {/* Google Sign-In button container */}
+                <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    
+                    <div id="googleSignInDiv"></div> {/* This is where Google button will render */}
+                </div>
 
                     <p>
                         don't have any account? <Link to="/register">register now</Link>
@@ -208,6 +203,8 @@ const Login = () => {
                         <Link to="/forgotpassword">Forgot Password?</Link>
                     </p>
                 </form>
+
+               
 
             </div>
         </div>
