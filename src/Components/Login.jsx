@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react"; // Add useCallback
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import Swal from "sweetalert2";
@@ -11,37 +11,11 @@ const Login = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { loginUser } = useContext(UserContext); // Assuming loginUser handles setting user in context and local storage
-
-    // Google Sign-In Initialization
-    useEffect(() => {
-        // Check if window.google is available (script loaded)
-        if (window.google) {
-            window.google.accounts.id.initialize({
-                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredentialResponse, // Our new callback function
-                context: "signin", // Or "use" if appropriate
-                auto_prompt: false // Set to true if you want auto one-tap prompt
-            });
-
-            // Render the Google button into the specified div
-            window.google.accounts.id.renderButton(
-                document.getElementById("googleSignInDiv"), // Target element for the button
-                {
-                    theme: "filled_black",
-                    size: "large",
-                    text: "signin_with",
-                    shape: "rectangular",
-                    logo_alignment: "centre",
-                }
-            );
-            // Optional: for One Tap prompt
-            // window.google.accounts.id.prompt();
-        }
-    }, []); // Empty dependency array means this runs once on mount
+    const { loginUser } = useContext(UserContext);
 
     // Function to handle Google credential response
-    const handleGoogleCredentialResponse = async (response) => {
+    // ⭐ IMPORTANT: Wrapped in useCallback with its dependencies ⭐
+    const handleGoogleCredentialResponse = useCallback(async (response) => {
         console.log("Encoded JWT ID token from Google:", response.credential);
         setLoading(true);
         setError("");
@@ -50,7 +24,7 @@ const Login = () => {
             const res = await fetch(`${API_BASE_URL}/auth/google-login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: response.credential }), // Send the ID token to your backend
+                body: JSON.stringify({ token: response.credential }),
             });
 
             const data = await res.json();
@@ -66,8 +40,7 @@ const Login = () => {
                 });
             } else {
                 localStorage.setItem("token", data.token);
-                // The 'loginUser' function in your UserContext should handle setting the user globally
-                loginUser(data.user); // Pass the user object received from backend
+                loginUser(data.user);
                 Swal.fire({
                     icon: "success",
                     title: "Google Login Successful",
@@ -75,7 +48,7 @@ const Login = () => {
                     timer: 1500,
                     showConfirmButton: false,
                 });
-                navigate("/"); // Redirect to home or dashboard
+                navigate("/");
             }
         } catch (err) {
             console.error('Google login fetch error:', err);
@@ -88,7 +61,33 @@ const Login = () => {
                 confirmButtonColor: "#d33",
             });
         }
-    };
+    }, [setLoading, setError, loginUser, navigate]); // These are the dependencies of useCallback
+
+    // Google Sign-In Initialization
+    useEffect(() => {
+        console.log("DEBUG: REACT_APP_GOOGLE_CLIENT_ID:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
+
+        if (window.google) {
+            window.google.accounts.id.initialize({
+                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredentialResponse,
+                context: "signin",
+                auto_prompt: false
+            });
+
+            // ⭐ Changed theme to 'filled_blue' for a dark button ⭐
+            window.google.accounts.id.renderButton(
+                document.getElementById("googleSignInDiv"),
+                {
+                    theme: "filled_black", // Or "filled_black" for a black button
+                    size: "large",
+                    text: "signin_with",
+                    shape: "rectangular",
+                    logo_alignment: "left",
+                }
+            );
+        }
+    }, [handleGoogleCredentialResponse]); // ⭐ IMPORTANT: handleGoogleCredentialResponse is now a dependency of useEffect ⭐
 
 
     const handleSubmit = async (e) => {
@@ -114,7 +113,7 @@ const Login = () => {
                 });
             } else {
                 localStorage.setItem("token", data.token);
-                loginUser(data.user); // Use loginUser from context
+                loginUser(data.user);
                 Swal.fire({
                     icon: "success",
                     title: "Login Successful",
@@ -190,11 +189,11 @@ const Login = () => {
                     />
                     <input type="submit" value="login now" className="btn" disabled={loading} />
 
-                     {/* Google Sign-In button container */}
-                <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                    
-                    <div id="googleSignInDiv"></div> {/* This is where Google button will render */}
-                </div>
+                    {/* Google Sign-In button container */}
+                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+
+                        <div id="googleSignInDiv"></div>
+                    </div>
 
                     <p>
                         don't have any account? <Link to="/register">register now</Link>
@@ -203,8 +202,6 @@ const Login = () => {
                         <Link to="/forgotpassword">Forgot Password?</Link>
                     </p>
                 </form>
-
-               
 
             </div>
         </div>
