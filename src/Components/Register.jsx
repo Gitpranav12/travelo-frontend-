@@ -1,3 +1,4 @@
+// Example: client/src/Components/Register.jsx (Agar aapke paas hai)
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -10,22 +11,19 @@ const Register = () => {
     const [number, setNumber] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false); // Loading state add kiya
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-        setLoading(true); // Submission start hone par loading true karein
         try {
+            // URL badla gaya hai: /users/register se /auth/register
             const res = await fetch(`${API_BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, number, password }),
             });
             const data = await res.json();
-            setLoading(false); // Response aane ke baad loading false karein
-
             if (!res.ok) {
                 setError(data.message || "Registration failed");
                 Swal.fire({
@@ -42,11 +40,10 @@ const Register = () => {
                     timer: 1500,
                     showConfirmButton: false,
                 });
-                navigate("/login"); // Successful registration ke baad login page par redirect karein
+                navigate("/login"); // Redirect to login page after successful registration
             }
         } catch (err) {
             console.error("Registration error:", err);
-            setLoading(false); // Error hone par bhi loading false karein
             setError("Server error. Please try again later.");
             Swal.fire({
                 icon: "error",
@@ -59,6 +56,7 @@ const Register = () => {
 
     return (
         <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+            {/* Background Video */}
             <video
                 autoPlay
                 loop
@@ -77,20 +75,13 @@ const Register = () => {
                 Your browser does not support the video tag.
             </video>
 
-            <div className="login-form-container">
+            {/* Register Form */}
+            <div className="login-form-container"> {/* Reusing login-form-container styling */}
                 <Link to="/">
                     <i className="fas fa-times" id="form-close" />
                 </Link>
                 <form onSubmit={handleSubmit}>
                     <h3>Register</h3>
-
-                    {/* Loading message display karein */}
-                    {loading && (
-                        <p style={{ color: "blue", fontWeight: "bold" }}>
-                            Please wait... creating your account
-                        </p>
-                    )}
-
                     {error && <p style={{ color: "red" }}>{error}</p>}
                     <input
                         type="text"
@@ -109,7 +100,7 @@ const Register = () => {
                         required
                     />
                     <input
-                        type="text"
+                        type="text" // Or type="number" if you want numeric input
                         className="box"
                         placeholder="Enter your number"
                         value={number}
@@ -124,13 +115,13 @@ const Register = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <input type="submit" value="register now" className="btn" disabled={loading} /> {/* Button disable karein loading ke dauran */}
+                    <input type="submit" value="register now" className="btn" />
                     <p>
                         already have an account? <Link to="/login">login now</Link>
                     </p>
-                    <p>
-                        <Link to="/forgotpassword">Forgot Password?</Link>
-                    </p>
+                      <p>
+                            <Link to="/forgotpassword">Forgot Password?</Link> {/* Naya Link */}
+                      </p>
                 </form>
             </div>
         </div>
