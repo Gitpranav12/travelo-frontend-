@@ -760,3 +760,11 @@ header .icons i {
   right: 15%;
   animation-delay: 0.3s;
 }
+
+
+
+.glass-bg {
+  background: rgba(45, 45, 45, 0.33);
+  backdrop-filter: blur(4px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}

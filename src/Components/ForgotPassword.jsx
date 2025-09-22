@@ -73,7 +73,7 @@ const ForgotPassword = () => {
                 Your browser does not support the video tag.
             </video>
 
-            <div className="login-form-container">
+            <div className="glass-bg login-form-container">
                 <Link to="/">
                     <i className="fas fa-times" id="form-close" />
                 </Link>
